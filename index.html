@@ -1,0 +1,65 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Laundry Instructions</title><style type="text/css">body{
+margin:40px auto;
+max-width:650px;
+line-height:1.6;
+font-size:18px;
+color:#eee;
+background-color:#111;
+padding:0 10px
+}
+textarea, input, button {
+color:#eee;
+background-color:#111;
+}
+</style>
+</head>
+
+<body>
+	<div>
+        <input id="sample-target" type="number" value="50" style="width: 50px;">
+        <button type="button" onclick="sampleCachedGenerator()" id ="sample-button">Sample</button>
+    </div>
+    <div id="output-div">
+        Result:
+        <div>
+            <textarea 
+                id="output"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                style="width: 250px; height: 200px;"
+            ></textarea>
+        </div>
+    </div>
+    <script src="laundry-instructions.js"></script>
+    <script>
+        var cachedGenerator = LaundryInstructions.init();
+        
+        function sampleCachedGenerator() {
+            var output = document.getElementById("output");
+            var sampleTarget = document.getElementById("sample-target").value || 50;
+
+            var samples = getSamples(cachedGenerator, sampleTarget);
+
+            output.value = samples.join("\n");
+        }
+        
+        function getSamples(generator, target) {
+            var samples = [];
+            
+            for (var i = 0; i < target; i += 1) {
+                samples.push(LaundryInstructions.sampleLineFromGenerator(generator));
+            }
+            
+            return samples;
+        }
+    </script>
+</body>
+</html>
