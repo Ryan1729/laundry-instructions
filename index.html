@@ -21,7 +21,7 @@ background-color:#111;
 </head>
 
 <body>
-	<div>
+    <div>
         <input id="sample-target" type="number" value="50" style="width: 50px;">
         <button type="button" onclick="sampleCachedGrammar()" >Sample Grammar</button>
         <button type="button" onclick="sampleCachedGenerator()" >Sample Random Generator</button>
@@ -29,7 +29,7 @@ background-color:#111;
     <div id="output-div">
         Result:
         <div>
-            <textarea 
+            <textarea
                 id="output"
                 autocomplete="off"
                 autocorrect="off"
@@ -41,23 +41,20 @@ background-color:#111;
     </div>
     <script src="laundry-instructions.js"></script>
     <script>
-        var cachedGenerator = LaundryInstructions.initGenerator();
-        var cachedGrammar = LaundryInstructions.initGrammar();
-        
         function sampleCachedGenerator() {
-			sampleWith(() => LaundryInstructions.sampleLineFromGenerator(cachedGenerator))
+            sampleWith(LaundryInstructions.sampleLineFromGenerator)
         }
-        
-        function sampleCachedGenerator() {
-			sampleWith(() => LaundryInstructions.sampleLineFromGrammar(cachedGrammar))
+
+        function sampleCachedGrammar() {
+            sampleWith(LaundryInstructions.sampleLineFromGrammar)
         }
-        
+
         function sampleWith(fn) {
             var output = document.getElementById("output");
             var sampleTarget = document.getElementById("sample-target").value || 50;
 
             var samples = [];
-            
+
             for (var i = 0; i < sampleTarget; i += 1) {
                 samples.push(fn());
             }

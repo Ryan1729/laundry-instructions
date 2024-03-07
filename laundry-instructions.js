@@ -46,38 +46,14 @@ var LaundryInstructions = (function() {
       "Do-Not Dryclean"
     ]
 
-    var initGenerator = function() {
-        let allTokens = [];
-        const linesSet = {}
-
-        for (var i = 0; i < CORPUS.length; i += 1) {
-            var line = CORPUS[i];
-
-            var tokens = line.split(/\s+/).filter(function (token){
-                return token.length > 0;
-            });
-
-            linesSet[tokens.join(" ")] = 1
-
-            addTokens(allTokens, tokens);
-        }
-
-        allTokens = allTokens.map(dedupStringArray);
-
-        return {
-            linesSet,
-            allTokens,
-        };
-    };
-
-    var sampleLineFromGenerator = function(generator, randomFloat01) {
+    var sampleLineFromGenerator = function(randomFloat01) {
         if (!randomFloat01) {
             randomFloat01 = Math.random
         }
 
         const TRIES = 16
         for (let i = 0; i < TRIES; i += 1) {
-            const line = sampleLineFromGeneratorUnfiltered(generator, randomFloat01)
+            const line = sampleLineFromGeneratorUnfiltered(cachedGenerator, randomFloat01)
 
             if (!generator.linesSet[line]) {
                 return line
@@ -87,53 +63,20 @@ var LaundryInstructions = (function() {
         return "Found no line not present in corpus after " + TRIES + " tries"
     }
 
-    var initGrammar = function() {
-        return {
-        };
-    };
-
-    var sampleLineFromGrammar = function(grammar, randomFloat01) {
+    var sampleLineFromGrammar = function(randomFloat01) {
         if (!randomFloat01) {
             randomFloat01 = Math.random
         }
-
+        //cachedGrammar
         return selectFromArray(CORPUS, randomFloat01)
     }
 
     // private
 
-    var sampleLineFromGeneratorUnfiltered = function(generator, randomFloat01) {
-        const output = []
-
-        for (let i = 0; ; i += 1) {
-            const words = generator.allTokens[i]
-            if (!words) {
-                break
-            }
-
-            const word = selectFromArray(words, randomFloat01)
-
-            if (!word) {
-                break
-            }
-            output.push(word)
-        }
-
-        return output.join(" ")
-    }
-
-    const selectFromArray = (array, randomFloat01) => (array[selectIndexForArray(array, randomFloat01)])
-    const selectIndexForArray = (array, randomFloat01) => (Math.floor( randomFloat01() * array.length ))
-    
-    var addTokens = function (allTokens, newTokens) {
-        for (var i = 0; i < newTokens.length; i += 1) {
-            if (!allTokens[i]) {
-                allTokens[i] = [];
-            }
-
-            allTokens[i].push(newTokens[i]);
-        }
-    }
+    var initGrammar = function() {
+        return {
+        };
+    };
 
     var dedupStringArray = function (array) {
         return dedupStringArrayAndReturnSet(array).array
@@ -161,11 +104,69 @@ var LaundryInstructions = (function() {
         }
     }
 
+    var addTokens = function (allTokens, newTokens) {
+        for (var i = 0; i < newTokens.length; i += 1) {
+            if (!allTokens[i]) {
+                allTokens[i] = [];
+            }
+
+            allTokens[i].push(newTokens[i]);
+        }
+    }
+
+    var initGenerator = function() {
+        let allTokens = [];
+        const linesSet = {}
+
+        for (var i = 0; i < CORPUS.length; i += 1) {
+            var line = CORPUS[i];
+
+            var tokens = line.split(/\s+/).filter(function (token){
+                return token.length > 0;
+            });
+
+            linesSet[tokens.join(" ")] = 1
+
+            addTokens(allTokens, tokens);
+        }
+
+        allTokens = allTokens.map(dedupStringArray);
+
+        return {
+            linesSet,
+            allTokens,
+        };
+    };
+
+    var cachedGenerator = initGenerator();
+    var cachedGrammar = initGrammar();
+
+    var sampleLineFromGeneratorUnfiltered = function(generator, randomFloat01) {
+        const output = []
+
+        for (let i = 0; ; i += 1) {
+            const words = generator.allTokens[i]
+            if (!words) {
+                break
+            }
+
+            const word = selectFromArray(words, randomFloat01)
+
+            if (!word) {
+                break
+            }
+            output.push(word)
+        }
+
+        return output.join(" ")
+    }
+
+    const selectFromArray = (array, randomFloat01) => (array[selectIndexForArray(array, randomFloat01)])
+    const selectIndexForArray = (array, randomFloat01) => (Math.floor( randomFloat01() * array.length ))
+
     return {
         CORPUS,
-        initGenerator,
         sampleLineFromGenerator,
-        initGrammar,
         sampleLineFromGrammar,
     }
 }())

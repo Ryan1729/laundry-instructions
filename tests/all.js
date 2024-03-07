@@ -17,13 +17,9 @@ const it = (test) => allTests.push(test)
 
 // tests
 it(() => {
-    const grammar = LaundryInstructions.initGrammar()
-
     const samples = {}
-    for (var i = 0; i < 100; i += 1) {
-        samples[LaundryInstructions.sampleLineFromGrammar(
-            grammar
-        )] = 1;
+    for (var i = 0; i < 1000; i += 1) {
+        samples[LaundryInstructions.sampleLineFromGrammar()] = 1;
     }
 
     for (const line of LaundryInstructions.CORPUS) {
