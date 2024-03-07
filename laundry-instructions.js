@@ -1,52 +1,57 @@
 var LaundryInstructions = (function() {
     "use strict";
 
-    var init = function() {
-        var lines = [
-          "Machine Wash, Normal",
-          "Machine Wash, Cold",
-          "Machine Wash, Warm",
-          "Machine Wash, Hot",
-          "Machine Wash, Permanent Press",
-          "Machine Wash, Gentle or Delicate",
-          "Hand Wash",
-          "Do-Not Wash",
-          "Bleach When Needed",
-          "Non-Chlorine Bleach When Needed",
-          "Do-Not Bleach",
-          "Tumble Dry, Normal",
-          "Tumble Dry, Normal, Low Heat",
-          "Tumble Dry, Normal, Medium Heat",
-          "Tumble Dry, Normal, High Heat",
-          "Tumble Dry, Normal, No Heat",
-          "Tumble Dry, Permanent Press",
-          "Tumble Dry, Gentle",
-          "Do-Not Tumble Dry",
-          "Do-Not Dry",
-          "Line Dry",
-          "Drip Dry",
-          "Dry Flat",
-          "Dry In Shade",
-          "Line Dry In Shade",
-          "Dry Flat In Shade",
-          "Drip Dry In Shade",
-          "Do-Not Wring",
-          "Iron At Low Temperature",
-          "Iron At Medium Temperature",
-          "Iron",
-          "Iron At High Temperature",
-          "Do-Not Iron",
-          "Do-Not Steam",
-          "Dryclean",
-          "Do-Not Dryclean"
-        ]
+    // Could make a grammar of these with things like "Setting phrase", "Heat phrase" "Do-not"
+    // Things to do with grammar:
+    // * prove that each attested instruction can be generated
+    // * investigate which other production are possible
+    //     * if needed, loosen things to make more productions possible
+    // extend with new non-laundry productions. e.g "Dry heaves", "Low acidity", "Under moonlight", "Broil"
+    const CORPUS = [
+      "Machine Wash, Normal",
+      "Machine Wash, Cold",
+      "Machine Wash, Warm",
+      "Machine Wash, Hot",
+      "Machine Wash, Permanent Press",
+      "Machine Wash, Gentle or Delicate",
+      "Hand Wash",
+      "Do-Not Wash",
+      "Bleach When Needed",
+      "Non-Chlorine Bleach When Needed",
+      "Do-Not Bleach",
+      "Tumble Dry, Normal",
+      "Tumble Dry, Normal, Low Heat",
+      "Tumble Dry, Normal, Medium Heat",
+      "Tumble Dry, Normal, High Heat",
+      "Tumble Dry, Normal, No Heat",
+      "Tumble Dry, Permanent Press",
+      "Tumble Dry, Gentle",
+      "Do-Not Tumble Dry",
+      "Do-Not Dry",
+      "Line Dry",
+      "Drip Dry",
+      "Dry Flat",
+      "Dry In Shade",
+      "Line Dry In Shade",
+      "Dry Flat In Shade",
+      "Drip Dry In Shade",
+      "Do-Not Wring",
+      "Iron At Low Temperature",
+      "Iron At Medium Temperature",
+      "Iron",
+      "Iron At High Temperature",
+      "Do-Not Iron",
+      "Do-Not Steam",
+      "Dryclean",
+      "Do-Not Dryclean"
+    ]
 
-
+    var initGenerator = function() {
         let allTokens = [];
         const linesSet = {}
 
-        for (var i = 0; i < lines.length; i += 1) {
-            var line = lines[i];
+        for (var i = 0; i < CORPUS.length; i += 1) {
+            var line = CORPUS[i];
 
             var tokens = line.split(/\s+/).filter(function (token){
                 return token.length > 0;
@@ -65,16 +70,16 @@ var LaundryInstructions = (function() {
         };
     };
 
-    var sampleLineFromGraph = function(graph, randomFloat01) {
+    var sampleLineFromGenerator = function(generator, randomFloat01) {
         if (!randomFloat01) {
             randomFloat01 = Math.random
         }
 
         const TRIES = 16
         for (let i = 0; i < TRIES; i += 1) {
-            const line = sampleLineFromGraphUnfiltered(graph, randomFloat01)
+            const line = sampleLineFromGeneratorUnfiltered(generator, randomFloat01)
 
-            if (!graph.linesSet[line]) {
+            if (!generator.linesSet[line]) {
                 return line
             }
         }
@@ -82,13 +87,26 @@ var LaundryInstructions = (function() {
         return "Found no line not present in corpus after " + TRIES + " tries"
     }
 
+    var initGrammar = function() {
+        return {
+        };
+    };
+
+    var sampleLineFromGrammar = function(grammar, randomFloat01) {
+        if (!randomFloat01) {
+            randomFloat01 = Math.random
+        }
+
+        return selectFromArray(CORPUS, randomFloat01)
+    }
+
     // private
 
-    var sampleLineFromGraphUnfiltered = function(graph, randomFloat01) {
+    var sampleLineFromGeneratorUnfiltered = function(generator, randomFloat01) {
         const output = []
 
         for (let i = 0; ; i += 1) {
-            const words = graph.allTokens[i]
+            const words = generator.allTokens[i]
             if (!words) {
                 break
             }
@@ -144,7 +162,10 @@ var LaundryInstructions = (function() {
     }
 
     return {
-        init,
-        sampleLineFromGenerator: sampleLineFromGraph,
+        CORPUS,
+        initGenerator,
+        sampleLineFromGenerator,
+        initGrammar,
+        sampleLineFromGrammar,
     }
 }())

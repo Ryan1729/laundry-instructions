@@ -23,7 +23,8 @@ background-color:#111;
 <body>
 	<div>
         <input id="sample-target" type="number" value="50" style="width: 50px;">
-        <button type="button" onclick="sampleCachedGenerator()" id ="sample-button">Sample</button>
+        <button type="button" onclick="sampleCachedGrammar()" >Sample Grammar</button>
+        <button type="button" onclick="sampleCachedGenerator()" >Sample Random Generator</button>
     </div>
     <div id="output-div">
         Result:
@@ -40,25 +41,28 @@ background-color:#111;
     </div>
     <script src="laundry-instructions.js"></script>
     <script>
-        var cachedGenerator = LaundryInstructions.init();
+        var cachedGenerator = LaundryInstructions.initGenerator();
+        var cachedGrammar = LaundryInstructions.initGrammar();
         
         function sampleCachedGenerator() {
+			sampleWith(() => LaundryInstructions.sampleLineFromGenerator(cachedGenerator))
+        }
+        
+        function sampleCachedGenerator() {
+			sampleWith(() => LaundryInstructions.sampleLineFromGrammar(cachedGrammar))
+        }
+        
+        function sampleWith(fn) {
             var output = document.getElementById("output");
             var sampleTarget = document.getElementById("sample-target").value || 50;
 
-            var samples = getSamples(cachedGenerator, sampleTarget);
-
-            output.value = samples.join("\n");
-        }
-        
-        function getSamples(generator, target) {
             var samples = [];
             
-            for (var i = 0; i < target; i += 1) {
-                samples.push(LaundryInstructions.sampleLineFromGenerator(generator));
+            for (var i = 0; i < sampleTarget; i += 1) {
+                samples.push(fn());
             }
-            
-            return samples;
+
+            output.value = samples.join("\n");
         }
     </script>
 </body>
