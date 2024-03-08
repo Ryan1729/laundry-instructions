@@ -18,7 +18,7 @@ const it = (test) => allTests.push(test)
 // tests
 it(() => {
     const samples = {}
-    for (var i = 0; i < 1000; i += 1) {
+    for (var i = 0; i < (1 << 14); i += 1) {
         samples[LaundryInstructions.sampleLineFromGrammar()] = 1;
     }
 

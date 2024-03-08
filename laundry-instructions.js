@@ -1,6 +1,8 @@
 var LaundryInstructions = (function() {
     "use strict";
 
+    const RANDOM_0_1 = Math.random
+
     // Could make a grammar of these with things like "Setting phrase", "Heat phrase" "Do-not"
     // Things to do with grammar:
     // * prove that each attested instruction can be generated
@@ -15,10 +17,10 @@ var LaundryInstructions = (function() {
       "Machine Wash, Permanent Press",
       "Machine Wash, Gentle or Delicate",
       "Hand Wash",
-      "Do-Not Wash",
+      "Do Not Wash",
       "Bleach When Needed",
       "Non-Chlorine Bleach When Needed",
-      "Do-Not Bleach",
+      "Do Not Bleach",
       "Tumble Dry, Normal",
       "Tumble Dry, Normal, Low Heat",
       "Tumble Dry, Normal, Medium Heat",
@@ -26,8 +28,8 @@ var LaundryInstructions = (function() {
       "Tumble Dry, Normal, No Heat",
       "Tumble Dry, Permanent Press",
       "Tumble Dry, Gentle",
-      "Do-Not Tumble Dry",
-      "Do-Not Dry",
+      "Do Not Tumble Dry",
+      "Do Not Dry",
       "Line Dry",
       "Drip Dry",
       "Dry Flat",
@@ -35,20 +37,20 @@ var LaundryInstructions = (function() {
       "Line Dry In Shade",
       "Dry Flat In Shade",
       "Drip Dry In Shade",
-      "Do-Not Wring",
+      "Do Not Wring",
       "Iron At Low Temperature",
       "Iron At Medium Temperature",
       "Iron",
       "Iron At High Temperature",
-      "Do-Not Iron",
-      "Do-Not Steam",
+      "Do Not Iron",
+      "Do Not Steam",
       "Dryclean",
-      "Do-Not Dryclean"
+      "Do Not Dryclean"
     ]
 
     var sampleLineFromGenerator = function(randomFloat01) {
         if (!randomFloat01) {
-            randomFloat01 = Math.random
+            randomFloat01 = RANDOM_0_1
         }
 
         const TRIES = 16
@@ -65,17 +67,174 @@ var LaundryInstructions = (function() {
 
     var sampleLineFromGrammar = function(randomFloat01) {
         if (!randomFloat01) {
-            randomFloat01 = Math.random
+            randomFloat01 = RANDOM_0_1
         }
-        //cachedGrammar
-        return selectFromArray(CORPUS, randomFloat01)
+
+        let tokens = []
+
+        let { token, children } = selectFromArray(cachedGrammar, randomFloat01)
+        tokens.push(token)
+
+        while (children.length > 0) {
+            const entry = selectFromArray(children, randomFloat01)
+            tokens.push(entry.token)
+            children = entry.children
+        }
+
+        return tokens.reduce(reduceToken, "")
     }
 
     // private
 
-    var initGrammar = function() {
+    const BLANK = 0
+    const DO_NOT = 1
+    const SETTING = 2
+    const WASH = 3
+    const DRY = 4
+    const BLEACH = 5
+    const NORMAL = 6
+    const WRING = 7
+    const STEAM = 8
+    const DRYCLEAN = 9
+    const IRON = 10
+
+    const WASH_VERBS = [
+        "",
+        "Machine ",
+        "Hand "
+    ]
+
+    const DRY_SUFFIXES_1 = [
+        "",
+        " Flat",
+    ]
+
+    const DRY_SUFFIXES_2 = [
+        "",
+        " In Shade"
+    ]
+
+    const DRY_PREFIXES = [
+        "",
+        "Tumble ",
+        "Line ",
+        "Drip "
+    ]
+
+    const BLEACH_PREFIXES = [
+        "",
+        "Non-Chlorine ",
+    ]
+
+    const BLEACH_SUFFIXES = [
+        "",
+        " When Needed",
+    ]
+
+    const IRON_SUFFIXES = [
+        "",
+        " At Low Temperature",
+        " At Medium Temperature",
+        " At High Temperature",
+    ]
+
+    const HEATS = [
+        "",
+        ", Low Heat",
+        ", Medium Heat",
+        ", High Heat",
+        ", No Heat",
+    ]
+
+    const SETTINGS = [
+        "Cold",
+        "Warm",
+        "Hot",
+        "Permanent Press",
+        "Gentle",
+        "Gentle or Delicate",
+    ]
+
+    const reduceToken = (acc, token) => {
+        switch (token) {
+            case BLANK:
+            break
+            case DO_NOT:
+                acc += "Do Not "
+            break
+            case WRING:
+                acc += "Wring"
+            break
+            case NORMAL:
+                acc += ", Normal" + selectFromArray(HEATS)
+            break
+            case SETTING:
+                acc += ", " + selectFromArray(SETTINGS)
+            break
+            case WASH:
+                acc += selectFromArray(WASH_VERBS) + "Wash"
+            break
+            case DRY:
+                acc += selectFromArray(DRY_PREFIXES) + "Dry" + selectFromArray(DRY_SUFFIXES_1) + selectFromArray(DRY_SUFFIXES_2)
+            break
+            case BLEACH:
+                acc += selectFromArray(BLEACH_PREFIXES) + "Bleach" + selectFromArray(BLEACH_SUFFIXES)
+            break
+            case STEAM:
+                acc += "Steam"
+            break
+            case DRYCLEAN:
+                acc += "Dryclean"
+            break
+            case IRON:
+                acc += "Iron" + selectFromArray(IRON_SUFFIXES)
+            break
+            default:
+                acc += " Invalid default case! "
+            break
+        }
+        return acc
+    }
+
+    var leaf = function(token) {
         return {
-        };
+            token,
+            children: []
+        }
+    }
+
+    var initGrammar = function() {
+        const after = [
+            leaf(BLANK),
+            leaf(SETTING),
+            {
+                token: NORMAL,
+                children: [],
+            },
+        ]
+        const doings = [
+            {
+                token: WASH,
+                children: after,
+            },
+            {
+                token: DRY,
+                children: after,
+            },
+            leaf(BLEACH),
+            leaf(WRING),
+            leaf(STEAM),
+            leaf(DRYCLEAN),
+            leaf(IRON),
+        ]
+
+        return [
+            {
+                token: DO_NOT,
+                children: doings,
+            },
+            ...doings
+        ];
     };
 
     var dedupStringArray = function (array) {
@@ -161,7 +320,8 @@ var LaundryInstructions = (function() {
         return output.join(" ")
     }
 
-    const selectFromArray = (array, randomFloat01) => (array[selectIndexForArray(array, randomFloat01)])
+    // TODO consider whether it's really worth it to keep this randomFloat01 parameter around
+    const selectFromArray = (array, randomFloat01 = RANDOM_0_1) => (array[selectIndexForArray(array, randomFloat01)])
     const selectIndexForArray = (array, randomFloat01) => (Math.floor( randomFloat01() * array.length ))
 
     return {
