@@ -48,24 +48,45 @@ var LaundryInstructions = (function() {
       "Do Not Dryclean"
     ]
 
-    var sampleLineFromGenerator = function(randomFloat01) {
-        if (!randomFloat01) {
-            randomFloat01 = RANDOM_0_1
-        }
-
-        const TRIES = 16
-        for (let i = 0; i < TRIES; i += 1) {
-            const line = sampleLineFromGeneratorUnfiltered(cachedGenerator, randomFloat01)
-
-            if (!generator.linesSet[line]) {
-                return line
+    var sampleLineFromGenerator = function({filterOutCorpus, randomFloat01}) {
+        if (filterOutCorpus) {
+            if (!randomFloat01) {
+                randomFloat01 = RANDOM_0_1
             }
+
+            const TRIES = 16
+            for (let i = 0; i < TRIES; i += 1) {
+                const line = sampleLineFromGeneratorUnfiltered(cachedGenerator, randomFloat01)
+
+                if (!cachedGenerator.linesSet[line]) {
+                    return line
+                }
+            }
+
+            return "Found no line not present in corpus after " + TRIES + " tries"
         }
 
-        return "Found no line not present in corpus after " + TRIES + " tries"
+        return sampleLineFromGeneratorUnfiltered(cachedGenerator, randomFloat01)
     }
 
-    var sampleLineFromGrammar = function(randomFloat01) {
+    var sampleLineFromGrammar = function({filterOutCorpus, randomFloat01}) {
+        if (filterOutCorpus) {
+            const TRIES = 16
+            for (let i = 0; i < TRIES; i += 1) {
+                const line = sampleLineFromGrammarUnfiltered(randomFloat01)
+
+                if (CORPUS.indexOf(line) === -1) {
+                    return line
+                }
+            }
+
+            return "Found no line not present in corpus after " + TRIES + " tries"
+        }
+
+        return sampleLineFromGrammarUnfiltered(randomFloat01)
+    }
+
+    var sampleLineFromGrammarUnfiltered = function(randomFloat01) {
         if (!randomFloat01) {
             randomFloat01 = RANDOM_0_1
         }

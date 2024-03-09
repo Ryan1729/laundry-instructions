@@ -25,6 +25,11 @@ background-color:#111;
         <input id="sample-target" type="number" value="50" style="width: 50px;">
         <button type="button" onclick="sampleCachedGrammar()" >Sample Grammar</button>
         <button type="button" onclick="sampleCachedGenerator()" >Sample Random Generator</button>
+
+        <div>
+            <input type="checkbox" id="filter-out-corpus" name="filter-out-corpus" checked />
+            <label for="filter-repeats">Filter out standard list</label>
+        </div>
     </div>
     <div id="output-div">
         Result:
@@ -53,10 +58,12 @@ background-color:#111;
             var output = document.getElementById("output");
             var sampleTarget = document.getElementById("sample-target").value || 50;
 
+            const filterOutCorpus = document.getElementById("filter-out-corpus").checked;
+
             var samples = [];
 
             for (var i = 0; i < sampleTarget; i += 1) {
-                samples.push(fn());
+                samples.push(fn({filterOutCorpus}));
             }
 
             output.value = samples.join("\n");

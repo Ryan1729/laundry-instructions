@@ -19,7 +19,7 @@ const it = (test) => allTests.push(test)
 it(() => {
     const samples = {}
     for (var i = 0; i < (1 << 14); i += 1) {
-        samples[LaundryInstructions.sampleLineFromGrammar()] = 1;
+        samples[LaundryInstructions.sampleLineFromGrammar({filterCorpus: false})] = 1;
     }
 
     for (const line of LaundryInstructions.CORPUS) {
