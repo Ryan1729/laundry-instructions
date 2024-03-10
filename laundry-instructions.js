@@ -108,7 +108,7 @@ var LaundryInstructions = (function() {
     // private
 
     const BLANK = 0
-    const DO_NOT = 1
+    const HOW_MUCH = 1
     const SETTING = 2
     const WASH = 3
     const DRY = 4
@@ -119,37 +119,64 @@ var LaundryInstructions = (function() {
     const DRYCLEAN = 9
     const IRON = 10
 
+    const HOW_MUCHES = [
+        "",
+        "Do Not ",
+        "Always ",
+        "Never ",
+        "Constantly ",
+        "On Tuesdays, ",
+        "When The Moon Is Full, ",
+        "Once A Year, ",
+    ]
+
     const WASH_VERBS = [
         "",
         "Machine ",
-        "Hand "
+        "Hand ",
+        "Foot ",
+        "Car ",
+        "Brine ",
     ]
 
     const DRY_SUFFIXES_1 = [
         "",
         " Flat",
+        " Folded Into An Origami Crane",
+        " Wadded Into Ball",
+        " Wrapped Around Moist Sponge",
+        " On Spindle"
     ]
 
     const DRY_SUFFIXES_2 = [
         "",
-        " In Shade"
+        " In Shade",
+        " Under Heat Lamp",
+        " With Blowtorch",
     ]
 
     const DRY_PREFIXES = [
         "",
         "Tumble ",
         "Line ",
-        "Drip "
+        "Drip ",
+        "Toaster ",
+        "Squish ",
     ]
 
     const BLEACH_PREFIXES = [
         "",
         "Non-Chlorine ",
+        "Non-Xenon ",
+        "Non-Non-Chlorine ",
+        "Extra-Chlorine ",
     ]
 
     const BLEACH_SUFFIXES = [
         "",
         " When Needed",
+        " To Taste",
+        " Until Disintegrated",
     ]
 
     const IRON_SUFFIXES = [
@@ -157,6 +184,8 @@ var LaundryInstructions = (function() {
         " At Low Temperature",
         " At Medium Temperature",
         " At High Temperature",
+        " At Well Below Freezing",
+        " Or Steel",
     ]
 
     const HEATS = [
@@ -165,6 +194,8 @@ var LaundryInstructions = (function() {
         ", Medium Heat",
         ", High Heat",
         ", No Heat",
+        ", Medium Rare Heat",
+        ", Absurdly High Heat",
     ]
 
     const SETTINGS = [
@@ -174,14 +205,17 @@ var LaundryInstructions = (function() {
         "Permanent Press",
         "Gentle",
         "Gentle or Delicate",
+        "Rough",
+        "Temporary Press",
+        "Halfway Between Any Two Settings",
     ]
 
     const reduceToken = (acc, token) => {
         switch (token) {
             case BLANK:
             break
-            case DO_NOT:
-                acc += "Do Not "
+            case HOW_MUCH:
+                acc += selectFromArray(HOW_MUCHES)
             break
             case WRING:
                 acc += "Wring"
@@ -251,10 +285,9 @@ var LaundryInstructions = (function() {
 
         return [
             {
-                token: DO_NOT,
+                token: HOW_MUCH,
                 children: doings,
             },
-            ...doings
         ];
     };
 
