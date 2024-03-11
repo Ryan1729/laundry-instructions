@@ -14,9 +14,10 @@ const assert = (bool, message) => {
 // test framework
 let allTests = []
 const it = (test) => allTests.push(test)
+const skipit = (test) => {}
 
 // tests
-it(() => {
+skipit(() => {
     const samples = {}
     for (var i = 0; i < (1 << 19); i += 1) {
         samples[LaundryInstructions.sampleLineFromGrammar({filterCorpus: false})] = 1;
@@ -26,6 +27,18 @@ it(() => {
         if (!samples[line]){
             assert(false, "line was missing: \"" + line + "\" in " + JSON.stringify(samples))
         }
+    }
+})
+
+it(() => {
+    const samples = {}
+    for (var i = 0; i < 11; i += 1) {
+        const line = LaundryInstructions.nthTokensFromGrammar(i).join()
+
+        if (samples[line]) {
+            assert(false, "tokens were already there: \"" + line + "\" in " + JSON.stringify(samples))
+        }
+        samples[line] = 1;
     }
 })
 

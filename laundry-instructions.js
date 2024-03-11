@@ -105,7 +105,27 @@ var LaundryInstructions = (function() {
         return tokens.reduce(reduceToken, "")
     }
 
+    // TODO modify the gramar so that this works properly
+    const nthLineFromGrammar = (n) => {
+        const tokens = nthTokensFromGrammar(n)
+
+        return tokens.reduce(reduceToken, "")
+    }
+
+    const nthTokensFromGrammar = (n) => {
+        return selectFromArrayWithN(PATHS, n)[0]
+    }
+
     // private
+
+    function* iteratePaths(array) {
+        if (array.length == 0) return yield [];
+        for (const { token, children } of array) {
+            for (const path of iteratePaths(children)) {
+                yield [token, ...path];
+            }
+        }
+    }
 
     const BLANK = 0
     const HOW_MUCH = 1
@@ -354,6 +374,8 @@ var LaundryInstructions = (function() {
     var cachedGenerator = initGenerator();
     var cachedGrammar = initGrammar();
 
+    const PATHS = Array.from(iteratePaths(cachedGrammar))
+
     var sampleLineFromGeneratorUnfiltered = function(generator, randomFloat01) {
         const output = []
 
@@ -378,9 +400,16 @@ var LaundryInstructions = (function() {
     const selectFromArray = (array, randomFloat01 = RANDOM_0_1) => (array[selectIndexForArray(array, randomFloat01)])
     const selectIndexForArray = (array, randomFloat01) => (Math.floor( randomFloat01() * array.length ))
 
+    const selectFromArrayWithN = (array, n) => {
+        const index = n % array.length
+        return [array[index], Math.max(n - index, 0)]
+    }
+
     return {
         CORPUS,
         sampleLineFromGenerator,
         sampleLineFromGrammar,
+        nthLineFromGrammar,
+        nthTokensFromGrammar
     }
 }())
