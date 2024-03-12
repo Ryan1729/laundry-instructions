@@ -128,7 +128,7 @@ var LaundryInstructions = (function() {
     }
 
     const BLANK = 0
-    const HOW_MUCH = 1
+    //const HOW_MUCH = 1
     const SETTING = 2
     const WASH = 3
     const DRY = 4
@@ -138,17 +138,13 @@ var LaundryInstructions = (function() {
     const STEAM = 8
     const DRYCLEAN = 9
     const IRON = 10
-
-    const HOW_MUCHES = [
-        "",
-        "Do Not ",
-        "Always ",
-        "Never ",
-        "Constantly ",
-        "On Tuesdays, ",
-        "When The Moon Is Full, ",
-        "Once A Year, ",
-    ]
+    const DO_NOT = 11
+    const ALWAYS = 12
+    const NEVER = 13
+    const CONSTANTLY = 14
+    const ON_TUESDAYS = 15
+    const WHEN_THE_MOON_IS_FULL = 16
+    const ONCE_A_YEAR = 17
 
     const WASH_VERBS = [
         "",
@@ -234,9 +230,6 @@ var LaundryInstructions = (function() {
         switch (token) {
             case BLANK:
             break
-            case HOW_MUCH:
-                acc += selectFromArray(HOW_MUCHES)
-            break
             case WRING:
                 acc += "Wring"
             break
@@ -264,6 +257,27 @@ var LaundryInstructions = (function() {
             case IRON:
                 acc += "Iron" + selectFromArray(IRON_SUFFIXES)
             break
+            case DO_NOT:
+                acc += "Do Not "
+            break
+            case ALWAYS:
+                acc += "Always "
+            break
+            case NEVER:
+                acc += "Never "
+            break
+            case CONSTANTLY:
+                acc += "Constantly "
+            break
+            case ON_TUESDAYS:
+                acc += "On Tuesdays, "
+            break
+            case WHEN_THE_MOON_IS_FULL:
+                acc += "When The Moon Is Full, "
+            break
+            case ONCE_A_YEAR:
+                acc += "Once A Year, "
+            break            
             default:
                 acc += " Invalid default case! "
             break
@@ -305,7 +319,35 @@ var LaundryInstructions = (function() {
 
         return [
             {
-                token: HOW_MUCH,
+                token: BLANK,
+                children: doings,
+            },
+            {
+                token: DO_NOT,
+                children: doings,
+            },
+            {
+                token: ALWAYS,
+                children: doings,
+            },
+            {
+                token: NEVER,
+                children: doings,
+            },
+            {
+                token: CONSTANTLY,
+                children: doings,
+            },
+            {
+                token: ON_TUESDAYS,
+                children: doings,
+            },
+            {
+                token: WHEN_THE_MOON_IS_FULL,
+                children: doings,
+            },
+            {
+                token: ONCE_A_YEAR,
                 children: doings,
             },
         ];
