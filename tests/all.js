@@ -19,7 +19,7 @@ const skipit = (test) => {}
 // tests
 it(() => {
     const samples = {}
-    for (var i = 0; i < (1 << 19); i += 1) {
+    for (var i = 0; i < (1 << 20); i += 1) {
         samples[LaundryInstructions.sampleLineFromGrammar({filterCorpus: false})] = 1;
     }
 
@@ -32,11 +32,11 @@ it(() => {
 
 it(() => {
     const samples = {}
-    for (var i = 0; i < (1 << 6); i += 1) {
+    for (var i = 0; i < (1 << 9); i += 1) {
         const line = LaundryInstructions.nthTokensFromGrammar(i).join()
 
         if (samples[line]) {
-            assert(false, "tokens were already there: \"" + line + "\" in " + JSON.stringify(samples))
+            assert(false, "tokens were already there: \"" + line + "\" in " + JSON.stringify(samples) + " (" + Object.keys(samples).length + ")")
         }
         samples[line] = 1;
     }

@@ -145,15 +145,17 @@ var LaundryInstructions = (function() {
     const ON_TUESDAYS = 15
     const WHEN_THE_MOON_IS_FULL = 16
     const ONCE_A_YEAR = 17
-
-    const WASH_VERBS = [
-        "",
-        "Machine ",
-        "Hand ",
-        "Foot ",
-        "Car ",
-        "Brine ",
-    ]
+    const LOW_HEAT = 18
+    const MEDUIM_HEAT = 19
+    const HIGH_HEAT = 20
+    const NO_HEAT = 21
+    const MEDIUM_RARE_HEAT = 22
+    const ABSURDLY_HIGH_HEAT = 23
+    const MACHINE = 24
+    const HAND = 25
+    const FOOT = 26
+    const CAR = 27
+    const BRINE = 28
 
     const DRY_SUFFIXES_1 = [
         "",
@@ -204,16 +206,6 @@ var LaundryInstructions = (function() {
         " Or Steel",
     ]
 
-    const HEATS = [
-        "",
-        ", Low Heat",
-        ", Medium Heat",
-        ", High Heat",
-        ", No Heat",
-        ", Medium Rare Heat",
-        ", Absurdly High Heat",
-    ]
-
     const SETTINGS = [
         "Cold",
         "Warm",
@@ -234,13 +226,13 @@ var LaundryInstructions = (function() {
                 acc += "Wring"
             break
             case NORMAL:
-                acc += ", Normal" + selectFromArray(HEATS)
+                acc += ", Normal"
             break
             case SETTING:
                 acc += ", " + selectFromArray(SETTINGS)
             break
             case WASH:
-                acc += selectFromArray(WASH_VERBS) + "Wash"
+                acc += "Wash"
             break
             case DRY:
                 acc += selectFromArray(DRY_PREFIXES) + "Dry" + selectFromArray(DRY_SUFFIXES_1) + selectFromArray(DRY_SUFFIXES_2)
@@ -277,7 +269,43 @@ var LaundryInstructions = (function() {
             break
             case ONCE_A_YEAR:
                 acc += "Once A Year, "
-            break            
+            break
+            case LOW_HEAT:
+                acc += ", Low Heat"
+            break
+            case MEDUIM_HEAT:
+                acc += ", Medium Heat"
+            break
+            case HIGH_HEAT:
+                acc += ", High Heat"
+            break
+            case NO_HEAT:
+                acc += ", No Heat"
+            break
+            case MEDIUM_RARE_HEAT:
+                acc += ", Medium Rare Heat"
+            break
+            case ABSURDLY_HIGH_HEAT:
+                acc += ", Absurdly High Heat"
+            break
+            case ABSURDLY_HIGH_HEAT:
+                acc += ", Absurdly High Heat"
+            break
+            case MACHINE:
+                acc += "Machine "
+            break
+            case HAND:
+                acc += "Hand "
+            break
+            case FOOT:
+                acc += "Foot "
+            break
+            case CAR:
+                acc += "Car "
+            break
+            case BRINE:
+                acc += "Brine "
+            break
             default:
                 acc += " Invalid default case! "
             break
@@ -298,13 +326,47 @@ var LaundryInstructions = (function() {
             leaf(SETTING),
             {
                 token: NORMAL,
-                children: [],
+                children: [
+                    BLANK,
+                    LOW_HEAT,
+                    MEDUIM_HEAT,
+                    HIGH_HEAT,
+                    NO_HEAT,
+                    MEDIUM_RARE_HEAT,
+                    ABSURDLY_HIGH_HEAT,
+                ].map(leaf),
             },
         ]
+
+        const wash = [{
+            token: WASH,
+            children: after,
+        }]
+
         const doings = [
             {
-                token: WASH,
-                children: after,
+                token: BLANK,
+                children: wash,
+            },
+            {
+                token: MACHINE,
+                children: wash,
+            },
+            {
+                token: HAND,
+                children: wash,
+            },
+            {
+                token: FOOT,
+                children: wash,
+            },
+            {
+                token: CAR,
+                children: wash,
+            },
+            {
+                token: BRINE,
+                children: wash,
             },
             {
                 token: DRY,
